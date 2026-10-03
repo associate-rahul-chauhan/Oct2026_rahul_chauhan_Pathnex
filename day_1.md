@@ -1,131 +1,641 @@
-## Day 1 Learning [Date: 03-oct]
+# 🐧 Day 1 Learning — Linux Basics
 
-### Learn about basic command in linux
+**Date:** 03-Oct-2026
 
-in web server only **8% are window** system
+---
 
-and **linux** system hold more than 60% 
+## 1. Linux Basics
 
+Linux is widely used for **servers, cloud infrastructure, DevOps, and web servers**.
 
-### permission
+> **Note:** The exact percentage of Linux vs. Windows web servers depends on the source and how servers are counted, so avoid treating the 8% / 60% figures as fixed numbers.
 
-ch: change mode
+---
 
-ls: list file
+# 2. Basic Linux Commands
 
-ls -l : list file with long details
+### 📁 File & Directory Commands
 
-ls -a : show hidden file
+| Command  | Meaning                              | Example                  |
+| -------- | ------------------------------------ | ------------------------ |
+| `ls`     | List files and directories           | `ls`                     |
+| `ls -l`  | List with detailed information       | `ls -l`                  |
+| `ls -a`  | Show hidden files                    | `ls -a`                  |
+| `ls -la` | Detailed list including hidden files | `ls -la`                 |
+| `pwd`    | Print working directory              | `pwd`                    |
+| `cd`     | Change directory                     | `cd /home`               |
+| `cd ..`  | Go to parent directory               | `cd ..`                  |
+| `cd ~`   | Go to user's home directory          | `cd ~`                   |
+| `mkdir`  | Create a directory                   | `mkdir projects`         |
+| `touch`  | Create an empty file                 | `touch test.txt`         |
+| `cp`     | Copy a file/directory                | `cp test.txt backup.txt` |
+| `mv`     | Move or rename a file/directory      | `mv old.txt new.txt`     |
+| `rm`     | Remove a file                        | `rm test.txt`            |
 
-pwd: present working directory
+### Important
 
-touch : create a new file
+Linux does not normally have a separate `rename` command for simple file renaming.
 
+We use:
 
-mv: mv file (rename can also it is/ there is no command of rename a file)
+```bash
+mv oldname.txt newname.txt
+```
 
-rm: remove file 
+`mv` can therefore mean:
 
-cd ~ : change directory to home 
+```text
+mv → Move
+mv → Rename
+```
 
+---
 
-### viewing file
+# 3. Viewing Files
 
+| Command | Meaning                  | Example         |
+| ------- | ------------------------ | --------------- |
+| `cat`   | Display file contents    | `cat test.txt`  |
+| `head`  | Show beginning of a file | `head test.txt` |
+| `tail`  | Show end of a file       | `tail test.txt` |
+| `less`  | Read a file page by page | `less test.txt` |
 
-cat : content display
+### Example
 
-head : see head content of a file
+```bash
+cat test.txt
+```
 
-less : read file page by page
+Displays the complete file.
 
-tail : show footer content of file
+```bash
+head test.txt
+```
 
+Shows the beginning of the file.
 
-### users and permission
+```bash
+tail test.txt
+```
 
-whoami:  find the user name
+Shows the end of the file.
 
-id: show user id and groups
+For log files, this is very useful:
 
-groups: show group
+```bash
+tail -f app.log
+```
 
+`-f` means **follow** — it continuously shows new lines being added to the file.
 
-### how to understand permission
+---
 
+# 4. Users
 
-*when we do ls -la on a folder we see data something like
+### Find the current user
 
-drwxr-xr-x  3 rc rc 4096 Oct  3 15:59 Oct2026_rahul_chauhan_Pathnex
+```bash
+whoami
+```
 
+Example:
 
-what is drwxr-xr-x means
+```text
+rahul
+```
 
-let divide this into 4 category
+### Get detailed information about a user
 
-d: d stand for directory
+```bash
+id rahul
+```
 
-rwxr: r-read (4) w:write (2) x:execute (1) total count: 7 (total 7) (r:owner first is owner)
-xr: r: read (4) , x: 1 (total: 5) (second is group)
--x: x: (1) only 1 (last one the other)
+Example:
 
-so this directory have only 764 permission, this is how we understand what permission we need to give
+```text
+uid=1001(rahul) gid=1001(rahul) groups=1001(rahul),10(wheel)
+```
 
-so the persmisson flow goes like 
+This shows:
 
-read: 4 less
-write: 2 
-execute: 1 (hard) 
+```text
+UID    → User ID
+GID    → Group ID
+groups → Groups the user belongs to
+```
 
-so the number goes bottom to top
+### Find a user's groups
 
-so this is how we give number in this 
+```bash
+groups rahul
+```
 
+---
 
---------------------------------------------------------------------------
+# 5. Linux Users Are Stored in `/etc/passwd`
 
+Linux maintains user account information in:
 
-## create user in linux
+```text
+/etc/passwd
+```
 
-by default linux give few users but we need to create a new user
+To see all users:
 
+```bash
+cat /etc/passwd
+```
 
-*create a new user
+Or:
 
-    `sudo adduser rahul`
+```bash
+getent passwd
+```
 
-*check user
-    
-    `id rahul`
+### Show only usernames
 
-*find all the users
+```bash
+getent passwd | cut -d: -f1
+```
 
-        `sudo /etc/passwd`
+Example:
 
-this command will show all the user list
+```text
+root
+bin
+daemon
+ec2-user
+rahul
+```
 
+> ❌ `sudo /etc/passwd` is not correct because `/etc/passwd` is a file, not a command.
 
-*how to change user group, lets suppose some of user dont have the persmisson
+---
 
-add in wheel group: wheel group that gives sudo privileges to users
+# 6. Creating a User
 
-go to root user or user which have all the wheel group 
+There are different commands depending on the Linux distribution.
 
-         `sudo usermod -aG wheel rahul`
+On Amazon Linux, a common approach is:
 
+```bash
+sudo useradd -m rahul
+```
 
-## how to change/switch user
-    
-    `su rahul`
+`-m` means:
 
-## how to set password for rahul user
+> Create a home directory for the user.
 
-    `passwd`
+So Linux creates:
 
-then it will ask for password
+```text
+/home/rahul
+```
 
+You can then verify:
 
-## how to change the owner
+```bash
+id rahul
+```
 
+---
 
-`chown <username> <file>`
-    
+# 7. Setting a User Password
+
+To set the password for `rahul` as an administrator:
+
+```bash
+sudo passwd rahul
+```
+
+Then Linux asks:
+
+```text
+New password:
+Retype new password:
+```
+
+### If you are already logged in as `rahul`
+
+You can change your own password with:
+
+```bash
+passwd
+```
+
+---
+
+# 8. Linux Groups
+
+Groups are used to manage permissions for multiple users.
+
+For example:
+
+```text
+Users
+ │
+ ├── rahul
+ ├── amit
+ └── rohit
+
+Groups
+ │
+ ├── wheel
+ └── developers
+```
+
+A user can belong to multiple groups.
+
+Check:
+
+```bash
+groups rahul
+```
+
+---
+
+# 9. `wheel` Group
+
+On Amazon Linux, the `wheel` group is commonly used for users who should have **sudo privileges**.
+
+Add `rahul` to the `wheel` group:
+
+```bash
+sudo usermod -aG wheel rahul
+```
+
+### Understand the command
+
+```text
+usermod → modify user
+-a      → append
+-G      → supplementary group
+wheel   → group name
+rahul   → username
+```
+
+### Verify
+
+```bash
+id rahul
+```
+
+You should see `wheel` in the groups.
+
+For example:
+
+```text
+uid=1001(rahul) gid=1001(rahul) groups=1001(rahul),10(wheel)
+```
+
+> After adding a user to a group, log out and log back in for the new group membership to be applied to the login session.
+
+---
+
+# 10. Switching Users
+
+To switch to another user:
+
+```bash
+su rahul
+```
+
+To switch with a login shell:
+
+```bash
+su - rahul
+```
+
+The `-` is useful because it loads the user's normal environment and takes you to their home directory.
+
+You can verify:
+
+```bash
+whoami
+```
+
+---
+
+# 11. Linux File Permissions
+
+When you run:
+
+```bash
+ls -la
+```
+
+you may see:
+
+```text
+drwxr-xr-x  3 rc rc 4096 Oct 3 15:59 Oct2026_rahul_chauhan_Pathnex
+```
+
+The important part is:
+
+```text
+drwxr-xr-x
+```
+
+Let's divide it:
+
+```text
+d | rwx | r-x | r-x
+  |     |     |
+  |     |     └── Others
+  |     └──────── Group
+  └────────────── Owner
+```
+
+---
+
+# 12. What Does `d` Mean?
+
+The first character tells us the type of item:
+
+```text
+d → Directory
+- → Regular file
+l → Symbolic link
+```
+
+So:
+
+```text
+d
+```
+
+means this is a **directory**.
+
+---
+
+# 13. What Does `rwxr-xr-x` Mean?
+
+There are three permission groups:
+
+```text
+Owner | Group | Others
+```
+
+So:
+
+```text
+rwx | r-x | r-x
+```
+
+### Owner
+
+```text
+rwx
+```
+
+The owner has:
+
+```text
+r → Read
+w → Write
+x → Execute
+```
+
+### Group
+
+```text
+r-x
+```
+
+The group has:
+
+```text
+r → Read
+- → No write
+x → Execute
+```
+
+### Others
+
+```text
+r-x
+```
+
+Other users have:
+
+```text
+r → Read
+- → No write
+x → Execute
+```
+
+---
+
+# 14. Permission Numbers
+
+Linux represents permissions using numbers:
+
+```text
+r = 4
+w = 2
+x = 1
+```
+
+Therefore:
+
+```text
+rwx = 4 + 2 + 1 = 7
+
+r-x = 4 + 0 + 1 = 5
+
+r-x = 4 + 0 + 1 = 5
+```
+
+So:
+
+```text
+rwx | r-x | r-x
+ 7  |  5  |  5
+```
+
+Therefore:
+
+```text
+drwxr-xr-x = 755
+```
+
+### Remember
+
+```text
+Read    → 4
+Write   → 2
+Execute → 1
+```
+
+Think of it as:
+
+```text
+4 + 2 + 1 = 7
+```
+
+---
+
+# 15. `chmod` — Change Permissions
+
+`chmod` stands for:
+
+> **Change Mode**
+
+Example:
+
+```bash
+chmod 755 myfolder
+```
+
+This gives:
+
+```text
+Owner  → rwx
+Group  → r-x
+Others → r-x
+```
+
+So:
+
+```text
+755 = rwxr-xr-x
+```
+
+With `sudo`:
+
+```bash
+sudo chmod 755 myfolder
+```
+
+---
+
+# 16. `chown` — Change Owner
+
+`chown` stands for:
+
+> **Change Owner**
+
+Basic syntax:
+
+```bash
+chown <username> <file>
+```
+
+Example:
+
+```bash
+sudo chown rahul test.txt
+```
+
+Now `rahul` becomes the owner of `test.txt`.
+
+### Change owner and group
+
+```bash
+sudo chown rahul:developers test.txt
+```
+
+Here:
+
+```text
+rahul       → Owner
+developers  → Group
+```
+
+### Change ownership recursively
+
+```bash
+sudo chown -R rahul:developers myfolder
+```
+
+`-R` means **recursive** — apply the ownership change to the directory and everything inside it.
+
+---
+
+# 17. `chmod` vs `chown`
+
+This is very important:
+
+```text
+chown → WHO owns the file?
+chmod → WHAT can they do?
+```
+
+Example:
+
+```bash
+sudo chown rahul test.txt
+sudo chmod 755 test.txt
+```
+
+Means:
+
+```text
+Owner       → rahul
+Permissions → 755
+```
+
+---
+
+# ⭐ Day 1 Commands to Remember
+
+```bash
+# Files & directories
+ls
+ls -l
+ls -a
+ls -la
+pwd
+cd
+cd ..
+cd ~
+mkdir
+touch
+cp
+mv
+rm
+
+# Viewing files
+cat
+head
+tail
+less
+
+# Users
+whoami
+id
+groups
+getent passwd
+
+# User management
+sudo useradd -m rahul
+sudo passwd rahul
+sudo usermod -aG wheel rahul
+su - rahul
+
+# Permissions
+ls -l
+chmod
+chown
+```
+
+## 🧠 Easy way to remember
+
+```text
+ls      → See files
+pwd     → Where am I?
+cd      → Move
+mkdir   → Make folder
+touch   → Make file
+cp      → Copy
+mv      → Move/Rename
+rm      → Remove
+cat     → Read file
+
+whoami  → Who am I?
+id      → User details
+groups  → Group details
+
+chmod   → Change permissions
+chown   → Change ownership
+```
